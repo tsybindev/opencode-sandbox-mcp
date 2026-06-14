@@ -1,0 +1,8 @@
+.vscode
+.env
+data/
+workspace/
+config/
+rules/
+.DS_Store
+

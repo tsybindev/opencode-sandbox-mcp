@@ -1,0 +1,35 @@
+name: dev
+services:
+  opencode:
+    build:
+      context: .
+      args:
+        - OPENCODE_VERSION=latest
+        - USER_UID=${USER_UID:-1000}
+        - USER_GID=${USER_GID:-1000}
+
+    container_name: opencode
+
+    command: bash -c "codebase-memory-mcp config set auto_index true && socat TCP-LISTEN:9750,fork,reuseaddr TCP:127.0.0.1:9749 & opencode serve --hostname 0.0.0.0 --port 4096"
+
+    ports:
+      - "4096:4096"
+      - "4097:9750"
+
+    volumes:
+      - ./workspace:/home/opencode/workspace
+      - ./config:/home/opencode/.config/opencode
+      - ./rules:/home/opencode/.local/rules/opencode
+      - ./data/share:/home/opencode/.local/share/opencode
+      - ./data/state:/home/opencode/.local/state/opencode
+      # Путь к локальному кешу или закомменить совсем
+      - ~/.cache/codebase-memory-mcp:/home/opencode/.cache/codebase-memory-mcp
+
+    environment:
+      - TZ=${TZ}
+      - OPENCODE_SERVER_USERNAME=${OPENCODE_SERVER_USERNAME}
+      - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD}
+
+    working_dir: /home/opencode/workspace
+
+    restart: unless-stopped
