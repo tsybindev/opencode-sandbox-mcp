@@ -43,9 +43,11 @@ cp .env.sample .env
 Задайте логин и пароль для входа в веб-интерфейс в созданном `.env`.
 
 ### 2. Настройка правил (Rules)
-Поместите ваши файлы правил (например, `codebase-memory.md` или `karpathy.md`) в папку `./rules`.
+В папку `./rules/` уже добавлены файлы базовых правил:
+* [`codebase-memory.md`](file:///home/denis/Dev/DockerOpencode/rules/codebase-memory.md) — правила использования MCP-сервера в сессии.
+* [`karpathy.md`](file:///home/denis/Dev/DockerOpencode/rules/karpathy.md) — общие рекомендации для моделей по минимизации ошибок кодинга.
 
-Конфигурационный файл `./config/opencode.json` настроен на чтение этих правил:
+Эти файлы автоматически подключаются через файл конфигурации `./config/opencode.json` (который уже настроен и готов к использованию):
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
@@ -62,6 +64,18 @@ cp .env.sample .env
   ]
 }
 ```
+
+> [!TIP]
+> Чтобы модель в AI-ассистенте вела себя максимально правильно и эффективно использовала MCP-граф вместо долгого и неэффективного чтения файлов вручную, рекомендуется создать файл `AGENTS.md` (или `.cursorrules` / `.clinerules`) в корне вашего анализируемого проекта в папке `workspace` и прописать туда следующее системное указание:
+>
+> ```markdown
+> ## CRITICAL: Tool Restrictions for Code Analysis
+> Even though you know the paths to app/models/, app/repositories/, and app/services/, you are STRICTLY FORBIDDEN from reading them using standard `Read`, `read_file`, or `Glob` tools.
+> 
+> - **Mandatory Tool:** To view the contents of any code file, function, class, or method, you MUST use the `codebase-memory-mcp` tool `get_code_snippet`. 
+> - **No Brute-Force:** Never use `Read` on source code files to understand logic. Use `get_code_snippet` or structural graph queries instead.
+> - **Exception:** You may only use `Read` for non-code text/config assets (e.g., `.env`, `credentials.json`).
+> ```
 
 ### 3. Размещение проектов
 Поместите проекты, которые хотите проанализировать, в папку `./workspace` (например, `./workspace/my-awesome-project`).
